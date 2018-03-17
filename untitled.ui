@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>766</width>
+    <height>696</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="GraphicsLayoutWidget" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>751</width>
+      <height>321</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonExplore">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>402</y>
+      <width>337</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Исследование влияния k для разных метрик</string>
+    </property>
+   </widget>
+   <widget class="GraphicsLayoutWidget" name="graphicsView_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>440</y>
+      <width>751</width>
+      <height>221</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>11</y>
+      <width>750</width>
+      <height>62</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0" colspan="2">
+      <widget class="QPushButton" name="pushButtotLoadIris">
+       <property name="text">
+        <string>Загрузить данные с рисом</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2" colspan="3">
+      <widget class="QCheckBox" name="checkBoxSuspended">
+       <property name="text">
+        <string>Использовать взвешенный kNN</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5" colspan="3">
+      <widget class="QPushButton" name="pushButtonCheckTest">
+       <property name="text">
+        <string>Проверить тестовую выборку</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="pushButtonGenerate">
+       <property name="text">
+        <string>Сгенерировать выборку</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Кол-во классов</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QSpinBox" name="spinBoxClasses">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="4">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Кол-во элементов</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5">
+      <widget class="QSpinBox" name="spinBoxElements">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="value">
+        <number>20</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="6">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Кол-во соседей(K)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="7">
+      <widget class="QSpinBox" name="spinBoxK">
+       <property name="minimum">
+        <number>3</number>
+       </property>
+       <property name="singleStep">
+        <number>2</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>766</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GraphicsLayoutWidget</class>
+   <extends>QGraphicsView</extends>
+   <header>pyqtgraph</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

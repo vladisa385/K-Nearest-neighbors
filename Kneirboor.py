@@ -41,25 +41,52 @@ def splitTrainTest(data, testPercent):
     return trainData, testData
 
 
-def classifyKNN(trainData, testData, k, numberOfClasses):
+def classifyKNN(trainData, testData, k, numberOfClasses, isSuspended,metrick):
 
-    def dist(a, b):
-        return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
+    def dist(a, b,metrick):
+        if metrick==0:
+         return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
+        if metrick==1:
+         return ( math.fabs(a[0] - b[0])+   math.fabs(a[1] - b[1]))/2
+        if metrick==2:
+         v1=math.fabs((a[0] - b[0]))
+         v2 = math.fabs((a[1] - b[1]))
+         if v1>v2:
+             return v1
+         return v2
 
     testLabels = []
     for testPoint in testData:
 
-        testDist = [[dist(testPoint, trainData[i][0]), trainData[i][1]] for i in range(len(trainData))]
+        testDist = [[dist(testPoint, trainData[i][0],metrick), trainData[i][1]] for i in range(len(trainData))]
 
         stat = [0 for i in range(numberOfClasses)]
         for d in sorted(testDist)[0:k]:
             stat[d[1]] += 1
+        if isSuspended:
+         suspendedtestdist = sorted(testDist, key=lambda x: (x[1], x[0]))
+         for i in stat:
+             n = next(obj for obj in suspendedtestdist if obj[1] == stat.index(i))[0]
+             if n==0:
+                n=0.00001
+             stat[stat.index(i)] = i/ (n * k)
+
 
         testLabels.append(sorted(zip(stat, range(numberOfClasses)), reverse=True)[0][1])
     return testLabels
 
 
 def calculateAccuracy(nClasses, nItemsInClass, k, testPercent):
+    data = generateData(nItemsInClass, nClasses)
+    trainData, testDataWithLabels = splitTrainTest(data, testPercent)
+    testData = [testDataWithLabels[i][0] for i in range(len(testDataWithLabels))]
+    testDataLabels = classifyKNN(trainData, testData, k, nClasses)
+
+    print("Accuracy: ",
+          sum([int(testDataLabels[i] == testDataWithLabels[i][1]) for i in range(len(testDataWithLabels))]) / float(
+              len(testDataWithLabels)))
+
+def calculateRecall(nClasses, nItemsInClass, k, testPercent):
     data = generateData(nItemsInClass, nClasses)
     trainData, testDataWithLabels = splitTrainTest(data, testPercent)
     testData = [testDataWithLabels[i][0] for i in range(len(testDataWithLabels))]
