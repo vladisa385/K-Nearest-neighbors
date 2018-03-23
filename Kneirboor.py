@@ -47,7 +47,15 @@ def classifyKNN(trainData, testData, k, numberOfClasses, isSuspended,metrick):
         if metrick==0:
          return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
         if metrick==1:
-         return ( math.fabs(a[0] - b[0])+   math.fabs(a[1] - b[1]))/2
+         n=0
+         temp =0
+
+         while n<len(a):
+
+           temp = temp +  math.fabs(a[n] - b[n])
+           n+=1
+
+         return temp/n
         if metrick==2:
          v1=math.fabs((a[0] - b[0]))
          v2 = math.fabs((a[1] - b[1]))

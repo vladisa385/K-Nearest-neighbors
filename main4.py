@@ -270,7 +270,7 @@ class Ui_MainWindow(QMainWindow):
             return
         self.w2.clear()
         self.legend.scene().removeItem(self.legend)
-        self.legend = self.w2.addLegend((20,20),(420,20))
+        self.legend = self.w2.addLegend()
         myspots = []
         i = self.spinBoxK.value()
         while i < self.spinBoxElements.value():
