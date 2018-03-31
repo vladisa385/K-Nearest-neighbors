@@ -45,7 +45,12 @@ def classifyKNN(trainData, testData, k, numberOfClasses, isSuspended,metrick):
 
     def dist(a, b,metrick):
         if metrick==0:
-         return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
+         n=0
+         temp = 0
+         while n<len(a):
+             temp+=((a[n] - b[n]) ** 2)
+             n+=1
+         return math.sqrt(temp)
         if metrick==1:
          n=0
          temp =0
@@ -57,11 +62,13 @@ def classifyKNN(trainData, testData, k, numberOfClasses, isSuspended,metrick):
 
          return temp/n
         if metrick==2:
-         v1=math.fabs((a[0] - b[0]))
-         v2 = math.fabs((a[1] - b[1]))
-         if v1>v2:
-             return v1
-         return v2
+         n=0
+         temp=[]
+         while n < len(a):
+             temp.append(math.fabs((a[n] - b[n])))
+             n+=1
+
+         return max(temp)
 
     testLabels = []
     for testPoint in testData:

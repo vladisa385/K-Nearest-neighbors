@@ -173,32 +173,65 @@ class Ui_MainWindow(QMainWindow):
 
 
     def loadIris(self):
-
-        with open('train', 'rb') as fp:
-            train = pickle.load(fp)
-        with open('labels', 'rb') as fp:
-            labels = pickle.load(fp)
         self.w1.clear()
-
-        self.numberofclasses = 3
         self.traindata = []
+        self.traindata4 = []
+        self.traindata3 = []
+
+        self.trueTestDataLabels = []
+        self.labeltestdata = []
+        self.testData = []
+        self.trueTestDataLabels4 = []
+        self.labeltestdata4 = []
+        self.testData4 = []
+
+        self.trueTestDataLabels3 = []
+        self.labeltestdata3 = []
+        self.testData3 = []
+
+        from sklearn.datasets import load_iris
+        train = load_iris().data
+        labels = load_iris().target
+        self.traindata4 = []
         n = 0
         for i in train:
-             self.traindata.append([])
-             self.traindata[n].append(i.tolist())
-             self.traindata[n].append(labels[n])
-             n += 1
+            self.traindata4.append([])
+            self.traindata4[n].append(i.tolist())
+            self.traindata4[n].append(labels[n])
+            n += 1
 
         # testDataLabels = classifyKNN(trainData, testData, 5, 2)
 
-        trainData, self.trueTestDataLabels = splitTrainTest(self.traindata, 0.33)
+        trainData4, self.trueTestDataLabels4 = splitTrainTest(self.traindata4, 0.33)
 
-        self.traindata = trainData
-        self.testData = [self.trueTestDataLabels[i][0] for i in range(len(self.trueTestDataLabels))]
-      #  self.labeltestdata = classifyKNN(trainData, self.testData, self.spinBoxK.value(), self.numberofclasses,self.checkBoxSuspended.isChecked())
+        self.traindata4 = trainData4
+        self.testData4 = [self.trueTestDataLabels4[i][0] for i in range(len(self.trueTestDataLabels4))]
+        #  self.labeltestdata = classifyKNN(trainData, self.testData, self.spinBoxK.value(), self.numberofclasses,self.checkBoxSuspended.isChecked())
+        for i in trainData4:
+            self.traindata3.append([i[0][:-1], i[1]])
 
+        print(self.traindata3)
+        #  self.labeltestdata = classifyKNN(trainData, self.testData, self.spinBoxK.value(), self.numberofclasses,self.checkBoxSuspended.isChecked())
+        for i in self.testData4:
+            self.testData3.append(i[:-1])
+            print(i[:-1])
+
+        for i in self.trueTestDataLabels4:
+            self.trueTestDataLabels3.append([i[0][:-1], i[1]])
         classes = []
         i = 0
+        for i in trainData4:
+            self.traindata.append([i[0][:-2],i[1]])
+
+        print(self.traindata3)
+        #  self.labeltestdata = classifyKNN(trainData, self.testData, self.spinBoxK.value(), self.numberofclasses,self.checkBoxSuspended.isChecked())
+        for i in self.testData4:
+            self.testData.append(i[:-2])
+            print(i[:-1])
+
+        for i in self.trueTestDataLabels4:
+            self.trueTestDataLabels.append([i[0][:-2],i[1]])
+        i=0
         while i < 20:
             classes.append([])
             i += 1
@@ -219,6 +252,8 @@ class Ui_MainWindow(QMainWindow):
         self.spinBoxK.setValue(4)
         self.spinBoxK.setSingleStep(3)
         self.spinBoxElements.setValue(75)
+        self.spinBoxClasses.setValue(3)
+        self.numberofclasses=3
 
     def checkTest(self):
         if len(self.traindata) == 0:
@@ -293,21 +328,54 @@ class Ui_MainWindow(QMainWindow):
     def explore(self):
         if not(self.traindata):
             return
+        trainData = []
+        testData = []
+
+        trueTestDataLabels = []
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+
+
+        msg.setWindowTitle("Выбор количества признаков")
+        msg.setText("Privet")
+
+        twoOptions = msg.addButton('2 признака', QMessageBox.AcceptRole)
+        threeOptions = msg.addButton('3 признака', QMessageBox.AcceptRole)
+        fourOptions = msg.addButton('4 признака', QMessageBox.AcceptRole)
+
+
+
+        msg.exec()
+        if msg.clickedButton() == twoOptions:
+              trainData = self.traindata
+              testData = self.testData
+
+              trueTestDataLabels = self.trueTestDataLabels
+        elif msg.clickedButton() == threeOptions:
+            trainData = self.traindata3
+            testData = self.testData3
+
+            trueTestDataLabels = self.trueTestDataLabels3
+        elif msg.clickedButton() == fourOptions:
+            trainData = self.traindata4
+            testData = self.testData4
+
+            trueTestDataLabels = self.trueTestDataLabels4
         self.w2.clear()
         self.legend.scene().removeItem(self.legend)
         self.legend = self.w2.addLegend((20,20),(420,20))
         myspots = []
         i = self.spinBoxK.value()
         while i < self.spinBoxElements.value():
-            self.labeltestdata = classifyKNN(self.traindata,
-                                             self.testData,
+            labeltestdata = classifyKNN(trainData,
+                                             testData,
                                              i,
                                              self.numberofclasses,
                                              self.checkBoxSuspended.isChecked(),
                                              0)
-            myspots.append([i, sum([int(self.labeltestdata[i] == self.trueTestDataLabels[i][1]) for i in
-                                    range(len(self.trueTestDataLabels))]) / float(
-                len(self.trueTestDataLabels))])
+            myspots.append([i, sum([int(labeltestdata[i] == trueTestDataLabels[i][1]) for i in
+                                    range(len(trueTestDataLabels))]) / float(
+                len(trueTestDataLabels))])
             i += self.spinBoxK.singleStep()
         self.w2.plot(x=[x[0] for x in myspots],
                      y=[y[1] for y in myspots],
@@ -321,15 +389,15 @@ class Ui_MainWindow(QMainWindow):
         myspots = []
         i = self.spinBoxK.value()
         while i < self.spinBoxElements.value():
-            self.labeltestdata = classifyKNN(self.traindata,
-                                             self.testData,
+            labeltestdata = classifyKNN(trainData,
+                                             testData,
                                              i,
                                              self.numberofclasses,
                                              self.checkBoxSuspended.isChecked(),
                                              1)
-            myspots.append([i, sum([int(self.labeltestdata[i] == self.trueTestDataLabels[i][1]) for i in
-                                    range(len(self.trueTestDataLabels))]) / float(
-                len(self.trueTestDataLabels))])
+            myspots.append([i, sum([int(labeltestdata[i] == trueTestDataLabels[i][1]) for i in
+                                    range(len(trueTestDataLabels))]) / float(
+                len(trueTestDataLabels))])
             i += self.spinBoxK.singleStep()
         self.w2.plot(x=[x[0] for x in myspots],
                      y=[y[1] for y in myspots],
@@ -340,15 +408,15 @@ class Ui_MainWindow(QMainWindow):
         myspots = []
         i = self.spinBoxK.value()
         while i < self.spinBoxElements.value():
-            self.labeltestdata = classifyKNN(self.traindata,
-                                             self.testData,
+            labeltestdata = classifyKNN(trainData,
+                                             testData,
                                              i,
                                              self.numberofclasses,
                                              self.checkBoxSuspended.isChecked(),
                                              2)
-            myspots.append([i, sum([int(self.labeltestdata[i] == self.trueTestDataLabels[i][1]) for i in
-                                    range(len(self.trueTestDataLabels))]) / float(
-                len(self.trueTestDataLabels))])
+            myspots.append([i, sum([int(labeltestdata[i] == trueTestDataLabels[i][1]) for i in
+                                    range(len(trueTestDataLabels))]) / float(
+                len(trueTestDataLabels))])
             i += self.spinBoxK.singleStep()
         self.w2.plot(x=[x[0] for x in myspots], y=[y[1] for y in myspots],
                      pen=(0, 255, 0),
@@ -365,43 +433,26 @@ class Ui_MainWindow(QMainWindow):
     def compareOptions(self):
         if not (self.traindata):
             return
-        self.traindata = []
-        self.traindata4 = []
-        self.traindata3 = []
-
-        self.trueTestDataLabels = []
-        self.labeltestdata = []
-        self.testData = []
-        self.trueTestDataLabels4 = []
-        self.labeltestdata4 = []
-        self.testData4 = []
-
-        self.trueTestDataLabels3 = []
-        self.labeltestdata3 = []
-        self.testData3 = []
         self.w3.clear()
         self.legend1.scene().removeItem(self.legend1)
-        self.legend1 = self.w3.addLegend((20,20),(20,0))
+        self.legend1 = self.w3.addLegend((20, 20), (20, 0))
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
 
-        from sklearn.datasets import load_iris
-        train = load_iris().data
-        labels = load_iris().target
-        self.traindata4 = []
-        n = 0
-        for i in train:
-            self.traindata4.append([])
-            self.traindata4[n].append(i.tolist())
-            self.traindata4[n].append(labels[n])
-            n += 1
+        msg.setWindowTitle("Выбор метрики")
+        msg.setText("Privet")
 
-        # testDataLabels = classifyKNN(trainData, testData, 5, 2)
+        twoOptions = msg.addButton('Евклидово расстояние', QMessageBox.AcceptRole)
+        threeOptions = msg.addButton('Манхэттенское расстояние', QMessageBox.AcceptRole)
+        fourOptions = msg.addButton('Расстояние Чебышева', QMessageBox.AcceptRole)
 
-        trainData4, self.trueTestDataLabels4 = splitTrainTest(self.traindata4, 0.33)
-
-        self.traindata4 = trainData4
-        self.testData4 = [self.trueTestDataLabels4[i][0] for i in range(len(self.trueTestDataLabels4))]
-        #  self.labeltestdata = classifyKNN(trainData, self.testData, self.spinBoxK.value(), self.numberofclasses,self.checkBoxSuspended.isChecked())
-
+        msg.exec()
+        if msg.clickedButton() == twoOptions:
+            metrick =0
+        elif msg.clickedButton() == threeOptions:
+            metrick = 1
+        elif msg.clickedButton() == fourOptions:
+            metrick = 2
         myspots = []
         i = self.spinBoxK.value()
         while i < self.spinBoxElements.value():
@@ -410,7 +461,7 @@ class Ui_MainWindow(QMainWindow):
                                              i,
                                              self.numberofclasses,
                                              self.checkBoxSuspended.isChecked(),
-                                             1)
+                                             metrick)
             myspots.append([i, sum([int(self.labeltestdata4[i] == self.trueTestDataLabels4[i][1]) for i in
                                     range(len(self.trueTestDataLabels4))]) / float(
                 len(self.trueTestDataLabels4))])
@@ -424,17 +475,7 @@ class Ui_MainWindow(QMainWindow):
 
 
 
-        for i in trainData4:
-            self.traindata3.append([i[0][:-1],i[1]])
 
-        print(self.traindata3)
-        #  self.labeltestdata = classifyKNN(trainData, self.testData, self.spinBoxK.value(), self.numberofclasses,self.checkBoxSuspended.isChecked())
-        for i in self.testData4:
-            self.testData3.append(i[:-1])
-            print(i[:-1])
-
-        for i in self.trueTestDataLabels4:
-            self.trueTestDataLabels3.append([i[0][:-1],i[1]])
         myspots = []
         i = self.spinBoxK.value()
         while i < self.spinBoxElements.value():
@@ -443,7 +484,7 @@ class Ui_MainWindow(QMainWindow):
                                               i,
                                               self.numberofclasses,
                                               self.checkBoxSuspended.isChecked(),
-                                              1)
+                                              metrick)
             myspots.append([i, sum([int(self.labeltestdata3[i] == self.trueTestDataLabels3[i][1]) for i in
                                     range(len(self.trueTestDataLabels3))]) / float(
                 len(self.trueTestDataLabels3))])
@@ -457,17 +498,7 @@ class Ui_MainWindow(QMainWindow):
 
 
 
-        for i in trainData4:
-            self.traindata.append([i[0][:-2],i[1]])
 
-        print(self.traindata3)
-        #  self.labeltestdata = classifyKNN(trainData, self.testData, self.spinBoxK.value(), self.numberofclasses,self.checkBoxSuspended.isChecked())
-        for i in self.testData4:
-            self.testData.append(i[:-2])
-            print(i[:-1])
-
-        for i in self.trueTestDataLabels4:
-            self.trueTestDataLabels.append([i[0][:-2],i[1]])
 
         myspots = []
         i = self.spinBoxK.value()
@@ -477,7 +508,7 @@ class Ui_MainWindow(QMainWindow):
                                              i,
                                              self.numberofclasses,
                                              self.checkBoxSuspended.isChecked(),
-                                             1)
+                                             metrick)
             myspots.append([i, sum([int(self.labeltestdata[i] == self.trueTestDataLabels[i][1]) for i in
                                     range(len(self.trueTestDataLabels))]) / float(
                 len(self.trueTestDataLabels))])
